@@ -132,9 +132,9 @@ class SteamClient:
         offers_received = offers_response['response'].get('trade_offers_received', [])
         offers_sent = offers_response['response'].get('trade_offers_sent', [])
         offers_response['response']['trade_offers_received'] = list(
-            filter(lambda offer: offer['trade_offer_state'] == TradeOfferState.Active, offers_received))
+            filter(lambda offer: offer.get('trade_offer_state') == TradeOfferState.Active, offers_received))
         offers_response['response']['trade_offers_sent'] = list(
-            filter(lambda offer: offer['trade_offer_state'] == TradeOfferState.Active, offers_sent))
+            filter(lambda offer: offer.get('trade_offer_state') == TradeOfferState.Active, offers_sent))
         return offers_response
 
     def get_trade_offer(self, trade_offer_id: str, merge: bool = True) -> dict:
@@ -179,7 +179,7 @@ class SteamClient:
 
     @login_required
     def accept_trade_offer(self, trade_offer_id: str) -> dict:
-        trade = self.get_trade_offer(trade_offer_id)
+        # trade = self.get_trade_offer(trade_offer_id)
         # trade_offer_state = TradeOfferState(trade['response']['offer']['trade_offer_state'])
         # if trade_offer_state is not TradeOfferState.Active:
         #     raise ApiException("Invalid trade offer state: {} ({})".format(trade_offer_state.name,
