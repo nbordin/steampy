@@ -41,7 +41,7 @@ class LoginExecutor:
         self._update_steam_guard(login_response)
         finallized_response = self._finalize_login()
         self._perform_redirects(finallized_response.json())
-        self.set_sessionid_cookies()
+        # self.set_sessionid_cookies()
         return self.session
 
     def _send_login_request(self) -> Response:
