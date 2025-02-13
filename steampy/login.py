@@ -68,7 +68,7 @@ class LoginExecutor:
                 "domain": domain}
 
     def _fetch_rsa_params(self, current_number_of_repetitions: int = 0) -> dict:
-        self.session.post(SteamUrl.COMMUNITY_URL)
+        self.session.get(SteamUrl.COMMUNITY_URL)
         request_data = {'account_name': self.username}
         response = self._api_call('GET', 'IAuthenticationService', 'GetPasswordRSAPublicKey', params = request_data)
 
@@ -154,13 +154,14 @@ class LoginExecutor:
         self.refresh_token = response.json()["response"]["refresh_token"]
 
     def _finalize_login(self):
-        sessionid = self.session.cookies["sessionid"]
         redir = "https://steamcommunity.com/login/home/?goto="
-
-        finallez_data = {
-            'nonce': self.refresh_token,
-            'sessionid': sessionid,
-            'redir': redir
+        files = {
+            'nonce': (None, self.refresh_token),
+            'sessionid': (None, self.session.cookies["sessionid"]),
+            'redir': (None, redir)
         }
-        response = self.session.post("https://login.steampowered.com/jwt/finalizelogin", data = finallez_data)
-        return response
+        headers = {
+            'Referer': redir,
+            'Origin': 'https://steamcommunity.com'
+        }
+        return self.session.post("https://login.steampowered.com/jwt/finalizelogin", headers=headers, files=files)
